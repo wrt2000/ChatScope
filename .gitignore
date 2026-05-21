@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDE
+.vscode/
+.idea/
+
+# Build / packaging
+*.zip
+*.crx
+node_modules/
+
+# Logs
+*.log

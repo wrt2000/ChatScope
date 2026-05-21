@@ -1,0 +1,423 @@
+/* ============ 折叠相关 ============ */
+
+/* 各平台的折叠目标 + 各消息元素都需要相对定位以承载按钮和勾选框 */
+article:has([data-message-author-role="assistant"]),
+.font-claude-response,
+div[data-test-render-count],
+[data-message-author-role="user"],
+[data-message-author-role="assistant"],
+[data-testid="user-message"] {
+  position: relative;
+  overflow: visible !important; /* 防止父容器裁剪挂在外缘的勾选框/折叠按钮 */
+}
+
+/* ============ 选择性打印的勾选框 ============ */
+
+.cgpt-msg-checkbox {
+  position: absolute !important;
+  top: 10px !important;
+  left: -28px !important; /* 挂在消息左外缘，避开文字 */
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  cursor: pointer !important;
+  z-index: 60 !important;
+  opacity: 0.5;
+  accent-color: #10a37f;
+  transition: opacity 0.15s, transform 0.15s;
+  margin: 0 !important;
+  padding: 0 !important;
+  appearance: auto !important;
+  -webkit-appearance: checkbox !important;
+}
+
+[data-message-author-role="user"]:hover .cgpt-msg-checkbox,
+[data-message-author-role="assistant"]:hover .cgpt-msg-checkbox,
+[data-testid="user-message"]:hover .cgpt-msg-checkbox,
+.font-claude-response:hover .cgpt-msg-checkbox,
+.cgpt-msg-checkbox:hover {
+  opacity: 1;
+  transform: scale(1.18);
+}
+
+.cgpt-msg-checkbox:checked {
+  opacity: 0.8;
+}
+
+/* 未勾选时给消息加一点半透明视觉提示 */
+[data-message-author-role="user"]:has(> .cgpt-msg-checkbox:not(:checked)),
+[data-message-author-role="assistant"]:has(> .cgpt-msg-checkbox:not(:checked)),
+[data-testid="user-message"]:has(> .cgpt-msg-checkbox:not(:checked)),
+.font-claude-response:has(> .cgpt-msg-checkbox:not(:checked)) {
+  opacity: 0.5;
+}
+
+.cgpt-collapsed {
+  display: none !important;
+}
+
+.cgpt-placeholder {
+  display: none;
+  text-align: center;
+  padding: 6px 12px;
+  margin: 8px auto;
+  max-width: 720px;
+  background: rgba(128, 128, 128, 0.08);
+  border: 1px dashed rgba(128, 128, 128, 0.35);
+  border-radius: 8px;
+  color: #888;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+.cgpt-collapsed + .cgpt-placeholder {
+  display: block;
+}
+
+.cgpt-placeholder:hover {
+  background: rgba(128, 128, 128, 0.15);
+  color: #555;
+}
+
+.cgpt-toggle-btn {
+  position: absolute !important;
+  top: 6px !important;
+  right: -54px !important; /* 挂在助手消息右外缘，避开文字 */
+  background: rgba(128, 128, 128, 0.18);
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  cursor: pointer;
+  z-index: 100;
+  color: inherit;
+  opacity: 0.5;
+  transition: opacity 0.15s, background 0.15s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+[data-message-author-role="assistant"]:hover .cgpt-toggle-btn,
+.font-claude-response:hover .cgpt-toggle-btn,
+.cgpt-toggle-btn:hover {
+  opacity: 1;
+  background: rgba(128, 128, 128, 0.25);
+}
+
+/* 跳转时的闪烁高亮 */
+.cgpt-flash {
+  animation: cgpt-flash-anim 1.5s ease;
+}
+@keyframes cgpt-flash-anim {
+  0%, 100% { box-shadow: none; }
+  20% { box-shadow: 0 0 0 4px rgba(255, 200, 0, 0.4); }
+}
+
+/* ============ 右下角浮动按钮 ============ */
+
+#cgpt-collapser-fab {
+  position: fixed;
+  bottom: 120px;
+  right: 20px;
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0.65;
+  transition: opacity 0.2s;
+  align-items: flex-end;
+}
+
+#cgpt-collapser-fab:hover {
+  opacity: 1;
+}
+
+.cgpt-fab-btn {
+  background: #10a37f;
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  min-width: 92px;
+  transition: transform 0.1s, background 0.15s;
+}
+
+.cgpt-fab-btn:hover {
+  background: #0d8b6c;
+  transform: translateY(-1px);
+}
+
+.cgpt-fab-btn:active {
+  transform: translateY(0);
+}
+
+.cgpt-fab-btn.cgpt-fab-secondary {
+  background: #6c6c6c;
+}
+.cgpt-fab-btn.cgpt-fab-secondary:hover {
+  background: #555;
+}
+
+.cgpt-fab-btn.cgpt-fab-toc {
+  background: #4f46e5;
+}
+.cgpt-fab-btn.cgpt-fab-toc:hover {
+  background: #3f3acc;
+}
+
+.cgpt-fab-btn.cgpt-fab-print {
+  background: #4a5568;
+}
+.cgpt-fab-btn.cgpt-fab-print:hover {
+  background: #2d3748;
+}
+
+.cgpt-fab-btn.cgpt-fab-md {
+  background: #ea580c;
+}
+.cgpt-fab-btn.cgpt-fab-md:hover {
+  background: #c2410c;
+}
+
+.cgpt-fab-btn.cgpt-fab-lang {
+  background: #0891b2;
+  min-width: 56px;
+  font-weight: 600;
+}
+.cgpt-fab-btn.cgpt-fab-lang:hover {
+  background: #0e7490;
+}
+
+/* 所有 select.cgpt-fab-btn 共用的基础样式（外观、箭头、option 颜色） */
+select.cgpt-fab-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 14px;
+  padding-right: 24px;
+  text-align: left;
+}
+select.cgpt-fab-btn option {
+  background: #fff;
+  color: #333;
+  padding: 4px;
+}
+select.cgpt-fab-btn option:disabled {
+  color: #aaa;
+}
+
+/* 各下拉的颜色变体 */
+.cgpt-fab-btn.cgpt-fab-select {
+  background-color: #6366f1;
+}
+.cgpt-fab-btn.cgpt-fab-select:hover {
+  background-color: #4f46e5;
+}
+
+.cgpt-fab-btn.cgpt-fab-export {
+  background-color: #4a5568;
+}
+.cgpt-fab-btn.cgpt-fab-export:hover {
+  background-color: #2d3748;
+}
+
+/* 状态徽章 */
+.cgpt-fab-badge {
+  background: #10a37f;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  min-width: 92px;
+  font-variant-numeric: tabular-nums;
+}
+.cgpt-fab-badge.cgpt-fab-badge-warn {
+  background: #dc2626;
+}
+
+/* ============ 右侧目录（TOC） ============ */
+
+#cgpt-toc {
+  position: fixed;
+  top: 80px;
+  right: 12px;
+  width: 240px;
+  max-height: calc(100vh - 200px);
+  z-index: 2147483646;
+  background: rgba(255, 255, 255, 0.96);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", system-ui, sans-serif;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cgpt-toc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+  color: #444;
+  cursor: move;
+  user-select: none;
+}
+
+.cgpt-toc-title {
+  font-size: 12px;
+}
+
+.cgpt-toc-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  color: #666;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.cgpt-toc-toggle:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.cgpt-toc-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 0;
+}
+
+#cgpt-toc.cgpt-toc-collapsed .cgpt-toc-list {
+  display: none;
+}
+
+/* 用户点 "目录" 按钮主动隐藏 / 没有内容自动隐藏 */
+#cgpt-toc.cgpt-toc-hidden,
+#cgpt-toc.cgpt-toc-no-content {
+  display: none !important;
+}
+
+.cgpt-toc-item {
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #333;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.45;
+  transition: background 0.1s;
+  display: flex;
+  gap: 6px;
+}
+
+.cgpt-toc-item:hover {
+  background: rgba(16, 163, 127, 0.1);
+}
+
+.cgpt-toc-index {
+  color: #999;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.cgpt-toc-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.cgpt-toc-item.cgpt-toc-custom .cgpt-toc-text {
+  color: #4f46e5;
+  font-weight: 500;
+}
+
+.cgpt-toc-input {
+  width: 100%;
+  border: 1px solid #10a37f;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff;
+  color: #333;
+  outline: none;
+}
+
+/* ============ 暗色模式 ============ */
+
+@media (prefers-color-scheme: dark) {
+  .cgpt-toggle-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #ccc;
+  }
+  article:hover .cgpt-toggle-btn,
+  .font-claude-response:hover .cgpt-toggle-btn,
+  div[data-test-render-count]:hover .cgpt-toggle-btn,
+  .cgpt-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .cgpt-placeholder {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #999;
+  }
+  .cgpt-placeholder:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+  }
+
+  #cgpt-toc {
+    background: rgba(35, 35, 38, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ddd;
+  }
+  .cgpt-toc-header {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ddd;
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  .cgpt-toc-toggle { color: #bbb; }
+  .cgpt-toc-toggle:hover { background: rgba(255, 255, 255, 0.08); }
+  .cgpt-toc-item {
+    color: #ddd;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+  .cgpt-toc-item:hover {
+    background: rgba(16, 163, 127, 0.22);
+  }
+  .cgpt-toc-index { color: #888; }
+  .cgpt-toc-item.cgpt-toc-custom .cgpt-toc-text { color: #a5b4fc; }
+  .cgpt-toc-input {
+    background: #2a2a2e;
+    color: #ddd;
+    border-color: #10a37f;
+  }
+}
