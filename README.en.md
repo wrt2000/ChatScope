@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="./banner.png" alt="ChatScope · AI 对话助手" width="520" />
+  <img src="./assets/banner.png" alt="ChatScope · AI 对话助手" width="520" />
 </p>
 
 # ChatScope · AI 对话助手
@@ -33,12 +33,23 @@
 
 ## 📷 Screenshots
 
-> _Placeholder — replace with real shots before submitting to stores. Recommended size: 1280×800._
->
-> - `screenshots/1-fab.png` — Floating panel with status badge
-> - `screenshots/2-toc.png` — TOC with edited titles
-> - `screenshots/3-collapsed.png` — Collapsed reply view
-> - `screenshots/4-export.png` — Print window with zoom selector
+<p align="center">
+  <img src="./assets/chat_screenshot.png" alt="Main view - floating panel and questions TOC" width="820" />
+  <br>
+  <em>Main view: floating control panel (bottom-right) + questions TOC (top-right, double-click to rename)</em>
+</p>
+
+<p align="center">
+  <img src="./assets/select_only_questions.png" alt="Select-only-questions mode" width="820" />
+  <br>
+  <em>From the <strong>Select ▾</strong> dropdown pick <code>Question</code> / <code>Answer</code> / <code>All</code> / <code>None</code> to batch-check messages</em>
+</p>
+
+<p align="center">
+  <img src="./assets/save_as_pdf.png" alt="Print / Save as PDF" width="820" />
+  <br>
+  <em><strong>Export ▾</strong> → <code>PDF</code> opens a clean print window with a zoom selector, then auto-triggers the browser print dialog</em>
+</p>
 
 ---
 
@@ -123,10 +134,12 @@ chatscope/
 ├── manifest.json      # MV3 declaration
 ├── content.js         # All logic (~800 lines, vanilla JS)
 ├── styles.css         # UI styles (~400 lines)
-├── icon-16.png        # toolbar / details icon
-├── icon-48.png        # extensions page icon
-├── icon-128.png       # store / install icon
-├── banner.png         # README banner
+├── assets/
+│   ├── icon-16.png    # toolbar / details icon
+│   ├── icon-48.png    # extensions page icon
+│   ├── icon-128.png   # store / install icon
+│   ├── icon-source.png # source artwork
+│   └── banner.png     # README banner
 ├── README.md          # 中文
 ├── README.en.md       # English (this file)
 └── LICENSE

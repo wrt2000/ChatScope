@@ -59,8 +59,8 @@
       closeBtn: '关闭',
       exportPrefix: '导出于',
       msgCount: (n) => `共 ${n} 条消息`,
-      mdMe: (i) => `🙋 我（第 ${i + 1} 条）`,
-      mdAI: (i) => `🤖 AI（第 ${i + 1} 条）`,
+      mdMe: (n) => `🙋 Q${n}`,
+      mdAI: (n) => `🤖 A${n}`,
       mdExportLine: (time, n) => `> 导出于 ${time} · 共 ${n} 条消息`,
     },
     en: {
@@ -102,8 +102,8 @@
       closeBtn: 'Close',
       exportPrefix: 'Exported at',
       msgCount: (n) => `${n} messages`,
-      mdMe: (i) => `🙋 You (#${i + 1})`,
-      mdAI: (i) => `🤖 AI (#${i + 1})`,
+      mdMe: (n) => `🙋 Q${n}`,
+      mdAI: (n) => `🤖 A${n}`,
       mdExportLine: (time, n) => `> Exported at ${time} · ${n} messages`,
     },
   };
@@ -627,6 +627,21 @@
       });
   }
 
+  // 合并相邻同 role 的消息（ChatGPT 的"思考过程 + 答案"是两个独立的 assistant 元素，
+  // 但逻辑上是一条回复 —— 导出时合并掉）
+  function mergeAdjacentSameRole(messages) {
+    const merged = [];
+    messages.forEach((m) => {
+      const last = merged[merged.length - 1];
+      if (last && last.role === m.role) {
+        last.html += '\n\n' + m.html;
+      } else {
+        merged.push({ role: m.role, html: m.html });
+      }
+    });
+    return merged;
+  }
+
   function buildExportHTML(messages) {
     const pageTitle = document.title || t('pageTitle');
     const exportTime = new Date().toLocaleString();
@@ -657,11 +672,13 @@
       body{zoom:1}
       @media print{body{padding:0;max-width:none}.toolbar{display:none}.msg.assistant{background:transparent}}
     `;
-    const body = messages.map((m) => `
-      <div class="msg ${m.role}">
-        <div class="role">${m.role === 'user' ? t('me') : t('ai')}</div>
-        <div class="content">${m.html}</div>
-      </div>`).join('');
+    let qIdx = 0, aIdx = 0;
+    const body = messages.map((m) => {
+      let label;
+      if (m.role === 'user') { qIdx += 1; label = `Q${qIdx}`; }
+      else                    { aIdx += 1; label = `A${aIdx}`; }
+      return `<div class="msg ${m.role}"><div class="role">${label}</div><div class="content">${m.html}</div></div>`;
+    }).join('');
     // 注意：不能含任何 inline script 或 onclick 属性 —— Edge 给扩展打开的新窗口
     // 应用了 CSP（script-src 'self' …），任何 inline 都会被拦截并记为扩展错误。
     // 按钮的事件由 exportConversation() 在新窗口加载后通过 addEventListener 绑定。
@@ -679,27 +696,37 @@
 
   function exportMarkdown() {
     const total = getAllMessages().length;
-    const messages = collectMessages(true);
-    const selected = messages.length;
+    const rawSelected = collectMessages(true);
+    const selectedCount = rawSelected.length;
 
     if (total === 0) {
       alert(t('noContentMD'));
       return;
     }
-    if (selected === 0) {
+    if (selectedCount === 0) {
       alert(t('noSelectionMD'));
       return;
     }
-    if (selected < total) {
-      if (!confirm(t('confirmPartialMD', selected, total))) return;
+    if (selectedCount < total) {
+      if (!confirm(t('confirmPartialMD', selectedCount, total))) return;
     }
 
+    // 合并相邻同 role 消息后再 Q1/A1 单独编号
+    const messages = mergeAdjacentSameRole(rawSelected);
     const pageTitle = document.title || t('pageTitle');
     const exportTime = new Date().toLocaleString();
     let md = `# ${pageTitle}\n\n`;
     md += `${t('mdExportLine', exportTime, messages.length)}\n\n---\n\n`;
-    messages.forEach((m, i) => {
-      const heading = '## ' + (m.role === 'user' ? t('mdMe', i) : t('mdAI', i));
+    let qIdx = 0, aIdx = 0;
+    messages.forEach((m) => {
+      let heading;
+      if (m.role === 'user') {
+        qIdx += 1;
+        heading = '## ' + t('mdMe', qIdx);
+      } else {
+        aIdx += 1;
+        heading = '## ' + t('mdAI', aIdx);
+      }
       md += `${heading}\n\n${htmlToMarkdown(m.html)}\n\n---\n\n`;
     });
     downloadTextFile(sanitizeFilename(pageTitle) + '.md', md, 'text/markdown;charset=utf-8');
@@ -707,20 +734,22 @@
 
   function exportConversation() {
     const total = getAllMessages().length;
-    const messages = collectMessages(true);
-    const selected = messages.length;
+    const rawSelected = collectMessages(true);
+    const selectedCount = rawSelected.length;
 
     if (total === 0) {
       alert(t('noContent'));
       return;
     }
-    if (selected === 0) {
+    if (selectedCount === 0) {
       alert(t('noSelection'));
       return;
     }
-    if (selected < total) {
-      if (!confirm(t('confirmPartialPrint', selected, total))) return;
+    if (selectedCount < total) {
+      if (!confirm(t('confirmPartialPrint', selectedCount, total))) return;
     }
+    // 同样合并相邻同 role 消息，让"思考 + 答案"变成一条
+    const messages = mergeAdjacentSameRole(rawSelected);
     const win = window.open('', '_blank');
     if (!win) {
       alert(t('popupBlocked'));
@@ -885,7 +914,7 @@
     processAll();
     observer.observe(document.body, { childList: true, subtree: true });
     // 在 content script 自己的 console 打印一次状态（DevTools 中可能需切换 context 才能看到）
-    console.log('[ChatScope v1.7.1] init done · lang=' + currentLang, {
+    console.log('[ChatScope v1.8.0] init done · lang=' + currentLang, {
       url: location.href,
       userMessages: getUserQuestions().length,
       assistantTargets: getAssistantTargets().length,

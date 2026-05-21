@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="./banner.png" alt="ChatScope · AI 对话助手" width="520" />
+  <img src="./assets/banner.png" alt="ChatScope · AI 对话助手" width="520" />
 </p>
 
 # ChatScope · AI 对话助手
@@ -33,11 +33,23 @@
 
 ## 📷 截图 · Screenshots
 
-> _占位：上架前在 Edge / Chrome 上拍 3-4 张截图替换。建议尺寸 1280×800。_
-> - `screenshots/1-fab.png` — 右下角浮动面板与状态徽章
-> - `screenshots/2-toc.png` — 右侧问题目录、自定义标题
-> - `screenshots/3-collapsed.png` — 折叠状态下的对话视图
-> - `screenshots/4-export.png` — 打印窗口含缩放选择
+<p align="center">
+  <img src="./assets/chat_screenshot.png" alt="主界面 - 右下角浮动面板 + 右上角问题目录" width="820" />
+  <br>
+  <em>主界面：右下角浮动控制面板 + 右上角问题目录（可双击重命名）</em>
+</p>
+
+<p align="center">
+  <img src="./assets/select_only_questions.png" alt="只选问题模式" width="820" />
+  <br>
+  <em>从「选择 ▾」下拉里选 Question / Answer / All / None，一键批量勾选</em>
+</p>
+
+<p align="center">
+  <img src="./assets/save_as_pdf.png" alt="打印为 PDF" width="820" />
+  <br>
+  <em>「导出 ▾」→ PDF：弹出干净的打印窗口，含缩放比例选择，自动调起浏览器打印对话框</em>
+</p>
 
 ---
 
@@ -120,10 +132,12 @@ chatscope/
 ├── manifest.json      # MV3 扩展声明
 ├── content.js         # 全部业务逻辑（约 800 行，纯原生 JS）
 ├── styles.css         # UI 样式（约 400 行）
-├── icon-16.png        # 工具栏 / 详情页小图标
-├── icon-48.png        # 扩展页中等图标
-├── icon-128.png       # 商店 / 加载详情大图标
-├── banner.png         # README 横幅
+├── assets/
+│   ├── icon-16.png    # 工具栏 / 详情页小图标
+│   ├── icon-48.png    # 扩展页中等图标
+│   ├── icon-128.png   # 商店 / 加载详情大图标
+│   ├── icon-source.png # 图标源文件
+│   └── banner.png     # README 横幅
 ├── README.md          # 中文（本文件）
 ├── README.en.md       # English
 └── LICENSE

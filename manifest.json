@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
   "name": "ChatScope · AI 对话助手",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "description": "Fold · outline · export your AI chats. 在 ChatGPT 与 Claude.ai 上折叠回复、跳转问题、按消息勾选并导出 PDF 或 Markdown。中文 / English UI.",
   "icons": {
-    "16":  "icon-16.png",
-    "48":  "icon-48.png",
-    "128": "icon-128.png"
+    "16":  "assets/icon-16.png",
+    "48":  "assets/icon-48.png",
+    "128": "assets/icon-128.png"
   },
   "host_permissions": [
     "https://chat.openai.com/*",
